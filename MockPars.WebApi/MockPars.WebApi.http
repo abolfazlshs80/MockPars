@@ -1,0 +1,6 @@
+@MockPars.WebApi_HostAddress = http://localhost:5268
+
+GET {{MockPars.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
