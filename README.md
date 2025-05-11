@@ -20,7 +20,7 @@ The project is organized into the following layers:
 
 1. Clone the repository:
    ```powershell
-   git clone <repository-url>
+   git clone https://github.com/abolfazlshs80/MockPars.git
    cd MockPars
    ```
 
