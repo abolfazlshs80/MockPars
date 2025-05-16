@@ -9,6 +9,23 @@
   <ItemGroup>
     <ProjectReference Include="..\MockPars.Application\MockPars.Application.csproj" />
     <ProjectReference Include="..\MockPars.Domain\MockPars.Domain.csproj" />
+	  
+	      		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.1" />
+	
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />	
+
+
+
+	                      
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Conversion\" />
   </ItemGroup>
 
 </Project>
