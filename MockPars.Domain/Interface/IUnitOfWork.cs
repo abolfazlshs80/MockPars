@@ -3,8 +3,11 @@
     public interface IUnitOfWork : IDisposable
     {
 
-    
-        IRepository<T> Repository<T>() where T : class;
+        public IUserRepository UserRepository { get; set; }
+        public IDatabasesRepository DatabasesRepository { get; set; }
+        public ITablesRepository TablesRepository { get; set; }
+        public IColumnsRepository ColumnsRepository { get; set; }
+
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }
