@@ -10,7 +10,7 @@ public class Columns
     public string ColumnType { get; set; }
 
     public FakeDataTypes FakeDataTypes { get; set; }
-    public string TableId { get; set; }
+    public int TableId { get; set; }
     public Tables Tables { get; set; }
 
 }
