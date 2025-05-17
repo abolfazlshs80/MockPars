@@ -1,31 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\MockPars.Application\MockPars.Application.csproj" />
-    <ProjectReference Include="..\MockPars.Domain\MockPars.Domain.csproj" />
-	  
-	      		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
+	<ItemGroup>
+		<ProjectReference Include="..\MockPars.Application\MockPars.Application.csproj" />
+		<ProjectReference Include="..\MockPars.Domain\MockPars.Domain.csproj" />
+
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.0" />
+		
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0" />
+
 		<PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.1" />
-	
-		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />	
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
 
 
 
-	                      
-  </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Conversion\" />
-  </ItemGroup>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Conversion\" />
+	</ItemGroup>
 
 </Project>
