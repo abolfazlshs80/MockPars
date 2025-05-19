@@ -12,9 +12,9 @@ namespace MockPars.Infrastructure.Repositories
         public ITablesRepository TablesRepository { get; set; }
         public IColumnsRepository ColumnsRepository { get; set; }
    
-        public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return await _context.SaveChangesAsync(cancellationToken);
         }
 
 
@@ -38,10 +38,6 @@ namespace MockPars.Infrastructure.Repositories
 
         }
 
-        public async Task<int> SaveChangesAsync()
-        {
-            return await _context.SaveChangesAsync();
-        }
 
         public void Dispose()
         {
