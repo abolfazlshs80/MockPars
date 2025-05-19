@@ -3,6 +3,7 @@ using MockPars.Infrastructure;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using MockPars.Application;
 
 namespace MockPars.WebApi
 {
@@ -17,6 +18,7 @@ namespace MockPars.WebApi
             
             builder.Services.AddControllers();
             builder.Services.RegisterInfrastructureServices(builder.Configuration);
+            builder.Services.RegisterApplicationServices();
 
             #region Config JWT
             var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]);
