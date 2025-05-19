@@ -14,10 +14,10 @@
     <Folder Include="Convertor\" />
     <Folder Include="Common\" />
     <Folder Include="Static\" />
-    <Folder Include="ViewModels\" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ErrorOr" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
   </ItemGroup>
 
