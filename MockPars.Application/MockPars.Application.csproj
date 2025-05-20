@@ -13,7 +13,6 @@
   <ItemGroup>
     <Folder Include="Convertor\" />
     <Folder Include="Common\" />
-    <Folder Include="Static\" />
   </ItemGroup>
 
   <ItemGroup>
