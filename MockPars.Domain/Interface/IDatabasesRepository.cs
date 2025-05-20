@@ -9,5 +9,7 @@ namespace MockPars.Domain.Interface
 {
     public interface IDatabasesRepository :IRepository<Databases>
     {
+        Task<IEnumerable<Databases>> GetByUserIdAsync(string userId, CancellationToken ct);
+        Task<Databases> GetByIdAsync(int id, string userId, CancellationToken ct);
     }
 }
