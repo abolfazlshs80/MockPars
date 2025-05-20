@@ -73,7 +73,7 @@ public class TableService(IUnitOfWork unitOfWork) : ITableService
         if (findTable is null)
             return ErrorOr.Error.NotFound(description: TableMessage.NotFound);
 
-        return new TableItemDto(findTable.Id,findTable.DatabasesId, findTable.TableName, findTable.Slug,findTable.IsGetAll,findTable.IsGet,findTable.IsPut,findTable.IsPost,findTable.IsDelete);
+        return new TableItemDto(findTable.Id,findTable.DatabasesId, findTable.TableName, findTable.Slug,findTable.IsGetAll,findTable.IsGet,findTable.IsPut,findTable.IsPost,findTable.IsDelete,null);
     }
 
     public async Task<ErrorOr<IEnumerable<TableItemDto>>> GetTablesByDatabaseId(int databaseId, CancellationToken ct)
@@ -82,6 +82,6 @@ public class TableService(IUnitOfWork unitOfWork) : ITableService
         if (findTable is null)
             return ErrorOr.Error.NotFound(description: TableMessage.NotFound);
 
-        return findTable.Select(_ => new TableItemDto(_.Id, _.DatabasesId, _.TableName, _.Slug, _.IsGetAll, _.IsGet, _.IsPut, _.IsPost, _.IsDelete)).ToList();
+        return findTable.Select(_ => new TableItemDto(_.Id, _.DatabasesId, _.TableName, _.Slug, _.IsGetAll, _.IsGet, _.IsPut, _.IsPost, _.IsDelete,null)).ToList();
     }
 }

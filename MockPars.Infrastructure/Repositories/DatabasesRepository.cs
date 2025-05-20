@@ -17,7 +17,12 @@ public class DatabasesRepository : Repository<Databases>, IDatabasesRepository
 
     public async Task<Databases> GetByIdAsync(int id, string userId, CancellationToken ct)
     {
-        return await context.Databases.Where(a => a.Id.Equals(id) && a.UserId.Equals(userId)).FirstOrDefaultAsync(ct)??default;
+        return await context.Databases.Where(a => a.Id.Equals(id) && a.UserId.Equals(userId))
+            .Include(_=>_.Tables)
+            .ThenInclude(_=>_.Columns)
+            .AsSplitQuery()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(ct)??default;
     }
     public async Task<IEnumerable<Databases>> GetByUserIdAsync( string userId, CancellationToken ct)
     {

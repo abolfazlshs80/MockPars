@@ -1,11 +1,14 @@
 ﻿using ErrorOr;
+using MockPars.Application.DTO.Column;
 using MockPars.Application.DTO.Database;
+using MockPars.Application.DTO.Table;
 using MockPars.Application.DTO.Users;
 using MockPars.Application.Generator;
 using MockPars.Application.Services.Interfaces;
 using MockPars.Application.Static.Message;
 using MockPars.Domain.Interface;
 using MockPars.Domain.Models;
+using System.Linq;
 using System.Reflection;
 
 namespace MockPars.Application.Services.Implementation;
@@ -66,7 +69,10 @@ public class DatabaseService(IUnitOfWork unitOfWork) : IDatabaseService
         if (findDatabase is null)
             return ErrorOr.Error.NotFound(description: DatabaseMessage.NotFound);
 
-        return new DatabaseItemDto(findDatabase.Id, findDatabase.DatabaseName, findDatabase.Slug);
+        return new DatabaseItemDto(findDatabase.Id, findDatabase.DatabaseName, findDatabase.Slug,
+            findDatabase.Tables.Select(_=> new TableItemDto(_.Id, _.DatabasesId, _.TableName, _.Slug, _.IsGetAll, _.IsGet, _.IsPut, _.IsPost, _.IsDelete,
+                      _.Columns.Select(c => new ColumnItemDto(c.Id, c.ColumnName, c.ColumnType, (FakeDataTypesDto)(c.FakeDataTypes)
+         , c.TablesId)).ToList())));
     }
 
     public async Task<ErrorOr<IEnumerable<DatabaseItemDto>>> GetDatabasesByUserId(string userId, CancellationToken ct)
@@ -76,8 +82,8 @@ public class DatabaseService(IUnitOfWork unitOfWork) : IDatabaseService
             return ErrorOr.Error.NotFound(description: DatabaseMessage.NotFound);
 
 
-        var a= findDatabase.Select(_ => new DatabaseItemDto(_.Id, _.DatabaseName, _.Slug)).ToList();
+        var a= findDatabase.Select(_ => new DatabaseItemDto(_.Id, _.DatabaseName, _.Slug,null)).ToList();
       
-        return findDatabase.Select(_=> new DatabaseItemDto(_.Id, _.DatabaseName, _.Slug)).ToList();
+        return findDatabase.Select(_=> new DatabaseItemDto(_.Id, _.DatabaseName, _.Slug,null)).ToList();
     }
 }
