@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using MockPars.Domain.Interface;
 using MockPars.Domain.Models;
 using MockPars.Infrastructure.Context;
@@ -17,6 +18,11 @@ namespace MockPars.Infrastructure.Repositories
         {
            await _context.User.AddAsync(user, ct);
            return true;
+        }
+
+        public async Task<bool> ExistsAsync(string id, CancellationToken ct)
+        {
+         return   await _context.User.AnyAsync(a => a.Id.Equals(id), ct);
         }
     }
 }
