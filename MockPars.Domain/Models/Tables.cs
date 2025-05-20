@@ -11,7 +11,7 @@ public class Tables
     public bool IsPut { get; set; }
     public bool IsPost { get; set; }
     public bool IsDelete { get; set; }
-    public int DatabaseId { get; set; }
+    public int DatabasesId { get; set; }
     public Databases Databases { get; set; }
 
     public HashSet<Columns> Columns { get; set; }
