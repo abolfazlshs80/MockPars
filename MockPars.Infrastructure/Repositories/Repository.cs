@@ -21,14 +21,14 @@ namespace MockPars.Infrastructure.Repositories
             _dbSet = context.Set<T>();
         }
 
-        public virtual async Task<IEnumerable<T>> GetAllAsync()
+        public virtual async Task<IEnumerable<T>> GetAllAsync(CancellationToken ct)
         {
-            return await _dbSet.ToListAsync();
+            return await _dbSet.ToListAsync(ct);
         }
 
-        public virtual async Task<T> GetByIdAsync(int id)
+        public virtual async Task<T> GetByIdAsync(int id, CancellationToken ct)
         {
-            return await _dbSet.FindAsync(id);
+            return await _dbSet.FindAsync(id, ct);
         }
 
         public virtual async Task<T> FindAsync(Expression<Func<T, bool>> predicate)
@@ -36,28 +36,28 @@ namespace MockPars.Infrastructure.Repositories
             return await _dbSet.FirstOrDefaultAsync(predicate);
         }
 
-        public virtual async Task<bool> ExistsAsync(int id)
+        public virtual async Task<bool> ExistsAsync(int id, CancellationToken ct)
         {
             return await _dbSet.FindAsync(id) != null;
         }
 
-        public virtual async Task<T> AddAsync(T entity)
+        public virtual async Task<T> AddAsync(T entity, CancellationToken ct)
         {
-            await _dbSet.AddAsync(entity);
-            await _context.SaveChangesAsync();
+            await _dbSet.AddAsync(entity,ct);
+    
             return entity;
         }
 
-        public virtual async Task UpdateAsync(T entity)
+        public virtual async Task UpdateAsync(T entity, CancellationToken ct)
         {
             _context.Update(entity);
-            await _context.SaveChangesAsync();
+           
         }
 
-        public virtual async Task DeleteAsync(T entity)
+        public virtual async Task DeleteAsync(T entity, CancellationToken ct)
         {
             _dbSet.Remove(entity);
-            await _context.SaveChangesAsync();
+      
         }
 
         public IQueryable<T> GetAllWithIncludes(Func<IQueryable<T>, IQueryable<T>> includeFunc = null, Expression<Func<T, bool>> filter = null)
