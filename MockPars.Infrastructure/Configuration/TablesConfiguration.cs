@@ -15,6 +15,6 @@ public class TablesConfiguration : IEntityTypeConfiguration<Tables>
 
         builder.HasMany(a => a.Columns)
             .WithOne(a => a.Tables)
-            .HasForeignKey(a => a.TableId);
+            .HasForeignKey(a => a.TablesId);
     }
 }
