@@ -17,7 +17,7 @@ public class DatabaseConfiguration : IEntityTypeConfiguration<Databases>
 
         builder.HasMany(a => a.Tables)
             .WithOne(a => a.Databases)
-            .HasForeignKey(a => a.DatabaseId);
+            .HasForeignKey(a => a.DatabasesId);
 
     }
 }

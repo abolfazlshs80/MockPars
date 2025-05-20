@@ -12,7 +12,7 @@ public class TablesConfiguration : IEntityTypeConfiguration<Tables>
         builder.HasKey(e => e.Id);
         builder.Property(a => a.TableName).IsRequired();
         builder.Property(a => a.Slug).IsRequired();
-        builder.Property(a => a.DatabaseId).IsRequired();
+
         builder.HasMany(a => a.Columns)
             .WithOne(a => a.Tables)
             .HasForeignKey(a => a.TableId);
