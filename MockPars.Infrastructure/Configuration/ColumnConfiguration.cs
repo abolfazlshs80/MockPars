@@ -14,7 +14,6 @@ public class ColumnConfiguration : IEntityTypeConfiguration<Columns>
         builder.HasKey(e => e.Id);
         builder.Property(a=>a.ColumnName).IsRequired();
         builder.Property(a=>a.ColumnType).IsRequired();
-        builder.Property(a=>a.TableId).IsRequired();
         builder.Property(a => a.FakeDataTypes).IsRequired()
             .HasConversion(new EnumToNumberConverter<FakeDataTypes, int>()); // تبدیل Enum به int
 
