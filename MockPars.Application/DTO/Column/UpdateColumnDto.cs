@@ -12,13 +12,3 @@ public class UpdateColumnDto
     public FakeDataTypesDto FakeDataTypes { get; set; }
     public int TableId { get; set; }
 }
-
-public enum FakeDataTypesDto:byte
-{
-    None = 0,
-    Name,
-    City,
-    Phone,
-    Date,
-    Time
-}
