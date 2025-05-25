@@ -11,7 +11,8 @@ namespace MockPars.Infrastructure.Repositories
         public IDatabasesRepository DatabasesRepository { get; set; }
         public ITablesRepository TablesRepository { get; set; }
         public IColumnsRepository ColumnsRepository { get; set; }
-   
+        public IRecordDataRepository RecordDataRepository { get; set; }
+
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             return await _context.SaveChangesAsync(cancellationToken);
@@ -26,11 +27,12 @@ namespace MockPars.Infrastructure.Repositories
             IUserRepository userRepository,
             IDatabasesRepository databasesRepository,
             ITablesRepository tablesRepository,
-            IColumnsRepository columnsRepository)
+            IColumnsRepository columnsRepository,
+            IRecordDataRepository recordDataRepository)
         {
            
             _context = context;
-
+            RecordDataRepository = recordDataRepository;
             UserRepository = userRepository;
             DatabasesRepository = databasesRepository;
             TablesRepository = tablesRepository;
