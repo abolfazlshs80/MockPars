@@ -24,6 +24,7 @@ namespace MockPars.Infrastructure.Context
         public DbSet<Databases> Databases { get; set; }
         public DbSet<Columns> Columns { get; set; }
         public DbSet<Tables> Tables { get; set; }
+        public DbSet<RecordData> RecordData { get; set; }
 
 
 
