@@ -69,7 +69,7 @@ public class ColumnService(IUnitOfWork unitOfWork) : IColumnService
         if (findColumn is null)
             return ErrorOr.Error.NotFound(description: ColumnMessage.NotFound);
 
-        return new ColumnItemDto(findColumn.Id, findColumn.ColumnName, findColumn.ColumnType, (FakeDataTypesDto)(findColumn.FakeDataTypes), findColumn.TablesId);
+        return new ColumnItemDto(findColumn.Id, findColumn.ColumnName, findColumn.ColumnType, (FakeDataTypesDto)(findColumn.FakeDataTypes), findColumn.TablesId,null);
     }
 
     public async Task<ErrorOr<IEnumerable<ColumnItemDto>>> GetColumnsByTableId(int tableId, CancellationToken ct)
@@ -78,6 +78,6 @@ public class ColumnService(IUnitOfWork unitOfWork) : IColumnService
         if (findColumn is null)
             return ErrorOr.Error.NotFound(description: ColumnMessage.NotFound);
 
-        return findColumn.Select(_ => new ColumnItemDto(_.Id, _.ColumnName, _.ColumnType, (FakeDataTypesDto)(_.FakeDataTypes), _.TablesId)).ToList();
+        return findColumn.Select(_ => new ColumnItemDto(_.Id, _.ColumnName, _.ColumnType, (FakeDataTypesDto)(_.FakeDataTypes), _.TablesId,null)).ToList();
     }
 }
