@@ -33,6 +33,7 @@ public static class ConfigureServices
         services.AddScoped<IDatabasesRepository, DatabasesRepository>();
         services.AddScoped<ITablesRepository, TablesRepository>();
         services.AddScoped<IColumnsRepository, ColumnsRepository>();
+        services.AddScoped<IRecordDataRepository, RecordDataRepository>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
