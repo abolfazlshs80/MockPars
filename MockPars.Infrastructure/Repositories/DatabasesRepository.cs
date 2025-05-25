@@ -20,6 +20,7 @@ public class DatabasesRepository : Repository<Databases>, IDatabasesRepository
         return await context.Databases.Where(a => a.Id.Equals(id) && a.UserId.Equals(userId))
             .Include(_=>_.Tables)
             .ThenInclude(_=>_.Columns)
+            .ThenInclude(_=>_.RecordData)
             .AsSplitQuery()
             .AsNoTracking()
             .FirstOrDefaultAsync(ct)??default;

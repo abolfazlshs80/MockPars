@@ -12,5 +12,6 @@ public class Columns
     public FakeDataTypes FakeDataTypes { get; set; }
     public int TablesId { get; set; }
     public Tables Tables { get; set; }
+    public ICollection<RecordData> RecordData { get; set; }
 
 }
