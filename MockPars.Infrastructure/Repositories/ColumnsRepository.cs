@@ -21,6 +21,14 @@ public class ColumnsRepository : Repository<Columns>, IColumnsRepository
 
     public async Task<IEnumerable<Columns>> GetByTableIdAsync(int tableId, CancellationToken ct)
     {
-        return await _context.Columns.Where(_ =>  _.TablesId.Equals(tableId)).ToListAsync(ct);
+        return await _context.Columns.Where(_ => _.TablesId.Equals(tableId)).ToListAsync(ct);
+    }
+
+    public async Task<List<Columns>> GetAllRowDataAsync(int tableId, CancellationToken ct)
+    {
+       return  await _context.Columns
+            .Where(c => c.TablesId == tableId)
+            .Include(c => c.RecordData)
+            .ToListAsync(ct);
     }
 }
