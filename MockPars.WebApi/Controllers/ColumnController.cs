@@ -57,7 +57,16 @@ namespace MockPars.WebApi.Controllers
 
             return Ok(result.Value);
         }
+        [HttpGet("GetRecord/{tableId}")]
+        public async Task<IActionResult> GetRecord( int tableId, CancellationToken ct)
+        {
 
+
+            var result = await ColumnService.GetAllRowDataAsync(tableId, ct);
+        
+
+            return Ok(result);
+        }
         [HttpGet("{tableId}")]
         public async Task<IActionResult> GetAll(int tableId, CancellationToken ct)
         {
