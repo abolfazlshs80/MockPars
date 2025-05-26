@@ -23,6 +23,7 @@ namespace MockPars.Application
             services.AddScoped<ITableService, TableService>();
             services.AddScoped<IColumnService, ColumnService>();
             services.AddScoped<IRecordDataService, RecordDataService>();
+            services.AddScoped<IFakeService, FakeService>();
 
             #endregion
 
