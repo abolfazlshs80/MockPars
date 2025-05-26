@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MockPars.Application.DTO.@base;
 
 namespace MockPars.Application.DTO.Column
 {

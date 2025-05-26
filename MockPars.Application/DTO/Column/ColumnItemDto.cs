@@ -1,4 +1,5 @@
-﻿using MockPars.Application.DTO.RecordData;
+﻿using MockPars.Application.DTO.@base;
+using MockPars.Application.DTO.RecordData;
 
 namespace MockPars.Application.DTO.Column;
 

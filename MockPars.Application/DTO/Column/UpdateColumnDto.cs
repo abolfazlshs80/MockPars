@@ -1,4 +1,5 @@
-﻿using MockPars.Domain.Enums;
+﻿using MockPars.Application.DTO.@base;
+using MockPars.Domain.Enums;
 
 namespace MockPars.Application.DTO.Column;
 
