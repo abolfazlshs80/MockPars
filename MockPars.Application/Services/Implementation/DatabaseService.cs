@@ -10,6 +10,7 @@ using MockPars.Domain.Interface;
 using MockPars.Domain.Models;
 using System.Linq;
 using System.Reflection;
+using MockPars.Application.DTO.@base;
 using MockPars.Application.DTO.RecordData;
 
 namespace MockPars.Application.Services.Implementation;
@@ -73,7 +74,7 @@ public class DatabaseService(IUnitOfWork unitOfWork) : IDatabaseService
         return new DatabaseItemDto(findDatabase.Id, findDatabase.DatabaseName, findDatabase.Slug,
             findDatabase.Tables.Select(_=> new TableItemDto(_.Id, _.DatabasesId, _.TableName, _.Slug, _.IsGetAll, _.IsGet, _.IsPut, _.IsPost, _.IsDelete,
                       _.Columns.Select(c => new ColumnItemDto(c.Id, c.ColumnName, c.ColumnType, (FakeDataTypesDto)(c.FakeDataTypes),c.TablesId
-                          , c.RecordData.Select(r => new RecordDataItemDto(r.Id, r.ColumnsId, r.Value)))
+                          , c.RecordData.Select(r => new RecordDataItemDto(r.Id, r.ColumnsId, r.Value,r.RowIndex)))
                       ).ToList())));
     }
 
