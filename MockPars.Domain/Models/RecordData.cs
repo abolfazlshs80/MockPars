@@ -6,6 +6,7 @@ public class RecordData
 
     public string Value { get; set; }
     public int ColumnsId { get; set; }
+    public int RowIndex { get; set; }
 
     public Columns Columns { get; set; }
     

@@ -6,4 +6,5 @@ public interface IRecordDataRepository : IRepository<RecordData>
 {
     Task<RecordData> GetByIdAsync(int id, int columnId, CancellationToken ct);
     Task<IEnumerable<RecordData>> GetByColumnIdAsync(int columnId, CancellationToken ct);
+    Task<int> GetLastRowByColumnIdAsync(int columnId, CancellationToken ct);
 }
