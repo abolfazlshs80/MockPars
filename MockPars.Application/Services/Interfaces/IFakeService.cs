@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ErrorOr;
+using MockPars.Application.DTO.Database;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +10,7 @@ namespace MockPars.Application.Services.Interfaces
 {
     public interface IFakeService
     {
+        Task<ErrorOr<int>> GenerateFakeData(int tableId,int count, CancellationToken ct);
         //Task
     }
 }
