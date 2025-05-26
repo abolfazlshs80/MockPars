@@ -24,4 +24,11 @@ public class TablesRepository : Repository<Tables>, ITablesRepository
         return await _context.Tables.Where(_ =>  _.DatabasesId.Equals(databaseId)).ToListAsync(ct);
 
     }
+
+    public async Task<Tables> GetColumnsByIdAsync(int tableId, CancellationToken ct)
+    {
+        return await _context.Tables.Where(_ => _.Id.Equals(tableId) )
+            .Include(a=>a.Columns)
+            .FirstOrDefaultAsync(ct);
+    }
 }
