@@ -20,6 +20,7 @@ public class RecordDataService(IUnitOfWork unitOfWork) : IRecordDataService
         {  //maping
          ColumnsId = model.ColumnsId,
          Value = model.Value,
+         RowIndex =await unitOfWork.RecordDataRepository.GetLastRowByColumnIdAsync(model.ColumnsId,ct)
         };
 
         await unitOfWork.RecordDataRepository.AddAsync(RecordData, ct);
@@ -39,6 +40,7 @@ public class RecordDataService(IUnitOfWork unitOfWork) : IRecordDataService
             return ErrorOr.Error.NotFound(description: RecordDataMessage.NotFound);
         findRecordData.Value = model.Value;
         findRecordData.ColumnsId=model.ColumnsId;
+        //findRecordData.RowIndex=model.RowIndex;
         //maping
    
         await unitOfWork.RecordDataRepository.UpdateAsync(findRecordData, ct);
@@ -62,7 +64,7 @@ public class RecordDataService(IUnitOfWork unitOfWork) : IRecordDataService
         if (findRecordData is null)
             return ErrorOr.Error.NotFound(description: RecordDataMessage.NotFound);
 
-        return new RecordDataItemDto(findRecordData.Id,findRecordData.ColumnsId,findRecordData.Value);
+        return new RecordDataItemDto(findRecordData.Id,findRecordData.ColumnsId,findRecordData.Value,findRecordData.RowIndex);
     }
 
     public async Task<ErrorOr<IEnumerable<RecordDataItemDto>>> GetRecordDataByColumnId(int columnId, CancellationToken ct)
@@ -71,6 +73,6 @@ public class RecordDataService(IUnitOfWork unitOfWork) : IRecordDataService
         if (findRecordData is null)
             return ErrorOr.Error.NotFound(description: RecordDataMessage.NotFound);
 
-        return findRecordData.Select(_ => new RecordDataItemDto(_.Id, _.ColumnsId,_.Value)).ToList();
+        return findRecordData.Select(_ => new RecordDataItemDto(_.Id, _.ColumnsId,_.Value, _.RowIndex)).ToList();
     }
 }
