@@ -23,7 +23,7 @@ namespace MockPars.Application.Services.Implementation
                 UserName = model.UserName,
                 Password = model.Password
             };
-            await unitOfWork.UserRepository.Create(user, ct);
+            await unitOfWork.UserRepository.CreateAsync(user, ct);
             await unitOfWork.SaveChangesAsync(ct);
             return user.Id;
         }
