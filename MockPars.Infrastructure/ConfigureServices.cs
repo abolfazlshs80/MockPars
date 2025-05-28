@@ -5,7 +5,8 @@ using MockPars.Domain.Interface;
 using MockPars.Infrastructure.Context;
 using MockPars.Infrastructure.Models.Jwt;
 using MockPars.Infrastructure.Repositories;
-
+using MockPars.Infrastructure.Service.Authebntication;
+using MockPars.Infrastructure.Service.Jwt;
 //using MockPars.Infrastructure.Repositories;
 
 namespace MockPars.Infrastructure;
@@ -39,7 +40,12 @@ public static class ConfigureServices
 
         #endregion
 
+        #region Services
 
+        services.AddScoped<IJwtService, JwtService>();
+        services.AddScoped<IAuthenticationService, AuthenticationService>();
+
+        #endregion
 
 
         return services;
