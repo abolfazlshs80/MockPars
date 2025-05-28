@@ -14,15 +14,25 @@ namespace MockPars.Infrastructure.Repositories
         {
         }
 
-        public async Task<bool> Create(User user, CancellationToken ct)
+        public async Task<bool> CreateAsync(User user, CancellationToken ct)
         {
-           await _context.User.AddAsync(user, ct);
-           return true;
+            await _context.User.AddAsync(user, ct);
+            return true;
+        }
+
+        public async Task<User> GetAsync(string username, string password, CancellationToken ct)
+        {
+            return await _context.User.FirstOrDefaultAsync(u => u.UserName == username && u.Password == password, ct);
+        }
+
+        public async Task<User> GetAsync(string username, CancellationToken ct)
+        {
+            return await _context.User.FirstOrDefaultAsync(u => u.UserName == username , ct);
         }
 
         public async Task<bool> ExistsAsync(string id, CancellationToken ct)
         {
-         return   await _context.User.AnyAsync(a => a.Id.Equals(id), ct);
+            return await _context.User.AnyAsync(a => a.Id.Equals(id), ct);
         }
     }
 }
