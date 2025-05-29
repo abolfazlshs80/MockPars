@@ -12,7 +12,7 @@ namespace MockPars.WebApi.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class DatabaseController(IDatabaseService databaseService,ISqlProvider sqlProvider) : ControllerBase
+    public class DatabaseController(IDatabaseService databaseService, ISqlProvider sqlProvider) : ControllerBase
     {
         [HttpPost]
         public async Task<IActionResult> Create(CreateDatabaseDto model, CancellationToken ct)
@@ -42,7 +42,7 @@ namespace MockPars.WebApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id, CancellationToken ct)
         {
-    
+
 
             var result = await databaseService.DeleteDatabase(id, ct);
             if (result.IsError)
@@ -56,7 +56,7 @@ namespace MockPars.WebApi.Controllers
         {
 
 
-            var result = await databaseService.GetDatabaseById(id,User.GetUserId(), ct);
+            var result = await databaseService.GetDatabaseById(id, User.GetUserId(), ct);
             if (result.IsError)
                 return BadRequest(string.Join(",", result.Errors.Select(a => a.Description)));
 
@@ -64,11 +64,11 @@ namespace MockPars.WebApi.Controllers
         }
 
         [HttpGet("")]
-        public async Task<IActionResult> GetAll( CancellationToken ct)
+        public async Task<IActionResult> GetAll(CancellationToken ct)
         {
 
 
-            var result = await databaseService.GetDatabasesByUserId( User.GetUserId(), ct);
+            var result = await databaseService.GetDatabasesByUserId(User.GetUserId(), ct);
             if (result.IsError)
                 return BadRequest(string.Join(",", result.Errors.Select(a => a.Description)));
 
@@ -78,18 +78,21 @@ namespace MockPars.WebApi.Controllers
 
         [HttpPost("ConnectToDatabase")]
         [AllowAnonymous]
-        public async Task<IActionResult> ConnectToDatabase(ConnectionDatabaseDto model,CancellationToken ct)
+        public async Task<IActionResult> ConnectToDatabase(ConnectionDatabaseDto model, CancellationToken ct)
         {
-            return Ok(await sqlProvider.GetTablesAsync(model,ct));
+            return Ok(await sqlProvider.GetTablesAsync(model, ct));
         }
 
 
         [HttpPost("FakeDataToTable")]
         [AllowAnonymous]
-        public async Task<IActionResult> ConnectToDatabase(FakeDataToTableDto model, CancellationToken ct)
+        public async Task<IActionResult> FakeDataToTable(FakeDataToTableDto model, CancellationToken ct)
         {
-            var res = await sqlProvider.AddFakeDataAsync(model);
-            return Ok();
+            var result = await sqlProvider.AddFakeDataAsync(model);
+
+            if (result.IsError)
+                return BadRequest(string.Join(",", result.Errors.Select(a => a.Description)));
+            return Ok(result.Value);
         }
 
         [HttpPost("GetColumnsByTable")]
@@ -97,7 +100,7 @@ namespace MockPars.WebApi.Controllers
         public async Task<IActionResult> ConnectToDatabase(GetColumnByTableDto model, CancellationToken ct)
         {
             var res = await sqlProvider.GetTableColumnAsync(model);
-            return Ok(res);
+            return Ok(res.Value);
         }
     }
 }
