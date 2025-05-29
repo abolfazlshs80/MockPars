@@ -9,5 +9,6 @@ namespace MockPars.Application.Static.Message
     public static class TableMessage
     {
         public const string NotFound = "پیدا نشد";
+        public const string NotFound_Row = "رکوردی یافت نشد";
     }
 }
