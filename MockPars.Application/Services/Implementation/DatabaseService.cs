@@ -89,4 +89,10 @@ public class DatabaseService(IUnitOfWork unitOfWork) : IDatabaseService
       
         return findDatabase.Select(_=> new DatabaseItemDto(_.Id, _.DatabaseName, _.Slug,null)).ToList();
     }
+
+    public async Task<ErrorOr<IEnumerable<TableInfoDto>>> GetTablesByConnectionString(string connectionstring, CancellationToken ct)
+    {
+
+        return new ErrorOr<IEnumerable<TableInfoDto>>();
+    }
 }
