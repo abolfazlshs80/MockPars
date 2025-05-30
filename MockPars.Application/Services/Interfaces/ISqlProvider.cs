@@ -21,8 +21,11 @@ namespace MockPars.Application.Services.Interfaces
         Task<ErrorOr<IEnumerable<TableInfoDto>>> GetTablesAsync(ConnectionDatabaseDto model,
             CancellationToken cancellationToken);
 
+        Task<object?> GetRandomForeignKeyValueAsync(SqlConnection connection, string foreignTable);
         Task<ErrorOr<List<ColumnInfoDto>>> GetTableColumnAsync(GetColumnByTableDto model);
         Task<ErrorOr<bool>> AddFakeDataAsync(FakeDataToTableDto model);
+        Task<ErrorOr<bool>> AddFakeDataAsync(FakeDataToCustomColumnsDto model);
+        object GenerateFake(FakeDataTypesDto type);
 
     }
 
@@ -92,28 +95,6 @@ namespace MockPars.Application.Services.Interfaces
                     CollectionForeignKeys.Add(ForeignKeyReader["TableName"] + "," + ForeignKeyReader["ReferencedTableName"] + "," + ForeignKeyReader["ColumnName"]);
                 }
 
-
-
-                //var CommandGetPrimaryKey = new SqlCommand("\tSELECT \r\n " +
-                //                                          "   KCU.COLUMN_NAME as ColumnName, \r\n  " +
-                //                                          "  TC.CONSTRAINT_NAME\r\nFROM \r\n " +
-                //                                          "   INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS TC\r\nJOIN \r\n  " +
-                //                                          "  INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS KCU\r\n  " +
-                //                                          "  ON TC.CONSTRAINT_NAME = KCU.CONSTRAINT_NAME\r\nWHERE" +
-                //                                          " \r\n " +
-                //                                          $"   TC.TABLE_NAME = '{firstTable}'\r\n " +
-                //                                          "   AND TC.CONSTRAINT_TYPE = 'PRIMARY KEY';\r\n", con);
-                //var GetPrimaryKeyReader = CommandGetPrimaryKey.ExecuteReader();
-                //List<string> CollectionGetPrimaryKeys = new List<string>();
-                //while (GetPrimaryKeyReader.Read())
-                //{
-                //    CollectionGetPrimaryKeys.Add(GetPrimaryKeyReader["ColumnName"].ToString());
-                //}
-
-
-
-
-
                 var command = new SqlCommand("select  * from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME =N'" + firstTable + "'  AND TABLE_SCHEMA =N'" + firstSchema + "'", con);
                 var Columnreader = command.ExecuteReader();
                 while (Columnreader.Read())
@@ -141,90 +122,130 @@ namespace MockPars.Application.Services.Interfaces
         public async Task<ErrorOr<bool>> AddFakeDataAsync(FakeDataToTableDto model)
         {
             string connectionString = model.Database.ConnectionString;
-            var currentTable = model.Tables.FirstOrDefault();
-            var columns = await GetTableColumnAsync(new GetColumnByTableDto()
-            { Database = model.Database, Table = currentTable });
-            var columnName = string.Join(',', columns.Value.Where(a => !a.IsPrimaryKey).Select(a => a.Name));
-            var parameterName = string.Join(',', columns.Value.Where(a => !a.IsPrimaryKey).Select(a => "@" + a.Name));
-
-            for (int i = 0; i < model.Count; i++)
+            //var currentTable = model.Tables.FirstOrDefault();
+            foreach (var currentTable in model.Tables)
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                var columnsResult = await GetTableColumnAsync(new GetColumnByTableDto
                 {
+                    Database = model.Database,
+                    Table = currentTable
+                });
 
+                if (columnsResult.IsError)
+                    return columnsResult.FirstError;
 
-                    string query = $"INSERT INTO [{currentTable.TableName}] ({columnName}) VALUES ({parameterName})";
-                    try
+                var columns = columnsResult.Value.Where(c => !c.IsComputed).ToList();
+                var columnNames = string.Join(',', columns.Select(c => c.Name));
+                var parameterNames = string.Join(',', columns.Select(c => "@" + c.Name));
+
+                for (int i = 0; i < model.Count; i++)
+                {
+                    using var connection = new SqlConnection(connectionString);
+                    await connection.OpenAsync();
+
+                    string insertQuery = $"INSERT INTO [{currentTable.TableName}] ({columnNames}) VALUES ({parameterNames})";
+
+                    using var command = new SqlCommand(insertQuery, connection);
+
+                    foreach (var column in columnsResult.Value)
                     {
-                        using (SqlCommand command = new SqlCommand(query, connection))
+
+
+                        object value = null;
+
+                        if (column.IsForeignKey)
                         {
-                            connection.Open();
-                            foreach (var item in columns.Value)
-                            {
-                                object value = null;
-                                //if (item.IsPrimaryKey)
-                                //    value = ConvertSqlToClr(item.TypeColumn) == FakeDataTypesDto.Digit ?0:null;
-                                if (item.IsForeignKey)
-                                {
-
-                                    var CommandGetPrimaryKey = new SqlCommand("\tSELECT \r\n " +
-                                                                              "   KCU.COLUMN_NAME as ColumnName, \r\n  " +
-                                                                              "  TC.CONSTRAINT_NAME\r\nFROM \r\n " +
-                                                                              "   INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS TC\r\nJOIN \r\n  " +
-                                                                              "  INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS KCU\r\n  " +
-                                                                              "  ON TC.CONSTRAINT_NAME = KCU.CONSTRAINT_NAME\r\nWHERE" +
-                                                                              " \r\n " +
-                                                                              $"   TC.TABLE_NAME = '{item.TableForeignKeyName}'\r\n " +
-                                                                              "   AND TC.CONSTRAINT_TYPE = 'PRIMARY KEY';\r\n", connection);
-                                    var GetPrimaryKeyReader = CommandGetPrimaryKey.ExecuteReader();
-                                    //  List<string> CollectionGetPrimaryKeys = new List<string>();
-                                    while (GetPrimaryKeyReader.Read())
-                                    {
-                                        var CommandGetPrimaryKeyRecord = new SqlCommand($"select top(1) [{GetPrimaryKeyReader["ColumnName"]}] as PrimaryColumnName from [{item.TableForeignKeyName}] ORDER BY NEWID()", connection);
-                                        var GetPrimaryKeyRecordReader = CommandGetPrimaryKeyRecord.ExecuteReader();
-                                        while (GetPrimaryKeyRecordReader.Read())
-                                        {
-                                            value = GetPrimaryKeyRecordReader["PrimaryColumnName"].ToString();
-
-                                        }
-                                        if (GetPrimaryKeyRecordReader.HasRows == false)
-                                        {
-                                            return Error.NotFound(TableMessage.NotFound_Row);
-                                        }
-                                        //   CollectionGetPrimaryKeys.Add(GetPrimaryKeyReader["ColumnName"].ToString());
-                                    }
-
-
-                                }
-                                else
-                                    value = item.IsComputed ? null : GenerateFake(ConvertSqlToClr(item.TypeColumn));
-
-                                if (!item.IsPrimaryKey)
-                                    command.Parameters.AddWithValue("@" + item.Name, value);
-                            }
-
-
-
-                            int rowsAffected = command.ExecuteNonQuery();
-                            Console.WriteLine($"{rowsAffected} row(s) inserted.");
-
-
-
+                            value = await GetRandomForeignKeyValueAsync(connection, column.TableForeignKeyName);
+                            if (value == null)
+                                return Error.NotFound(TableMessage.NotFound_Row);
+                        }
+                        else
+                        {
+                            value = GenerateFake(ConvertSqlToClr(column.TypeColumn));
                         }
 
+                        command.Parameters.AddWithValue("@" + column.Name, value ?? DBNull.Value);
                     }
 
-
+                    try
+                    {
+                        int rowsAffected = await command.ExecuteNonQueryAsync();
+                        Console.WriteLine($"{rowsAffected} row(s) inserted.");
+                    }
                     catch (Exception ex)
                     {
                         Console.WriteLine("Error: " + ex.Message);
                     }
+                }
+            }
 
 
+            return true;
+        }
 
 
+        public async Task<ErrorOr<bool>> AddFakeDataAsync(FakeDataToCustomColumnsDto model)
+        {
+            string connectionString = model.Database.ConnectionString;
+            var currentTable = model.Tables;
+
+            var columnsResult = await GetTableColumnAsync(new GetColumnByTableDto
+            {
+                Database = model.Database,
+                Table = currentTable
+            });
+
+            if (columnsResult.IsError)
+                return columnsResult.FirstError;
+
+            var columns = columnsResult.Value.Where(c => !c.IsComputed).ToList();
+            var columnNames = string.Join(',', columns.Select(c => c.Name));
+            var parameterNames = string.Join(',', columns.Select(c => "@" + c.Name));
+
+            for (int i = 0; i < model.Count; i++)
+            {
+                using var connection = new SqlConnection(connectionString);
+                await connection.OpenAsync();
+
+                string insertQuery = $"INSERT INTO [{currentTable.TableName}] ({columnNames}) VALUES ({parameterNames})";
+
+                using var command = new SqlCommand(insertQuery, connection);
+
+                foreach (var column in columnsResult.Value)
+                {
+                    object value = null;
+
+                    if (column.IsForeignKey)
+                    {
+                        value = await GetRandomForeignKeyValueAsync(connection, column.TableForeignKeyName);
+                        if (value == null)
+                            return Error.NotFound(TableMessage.NotFound_Row);
+                    }
+
+                    else if (model.Columns.Any(_ => _.Name.Equals(column.Name)))
+                    {
+                        value = GenerateFake((model.Columns.Where(_ => _.Name.Equals(column.Name)).Select(_ => _.FakeDataTypesDto).FirstOrDefault()));
+                    }
+
+                    else
+                    {
+                        value = GenerateFake(ConvertSqlToClr(column.TypeColumn));
+
+                    }
+
+                    command.Parameters.AddWithValue("@" + column.Name, value ?? DBNull.Value);
 
 
+                }
+
+                try
+                {
+                    int rowsAffected = await command.ExecuteNonQueryAsync();
+                    Console.WriteLine($"{rowsAffected} row(s) inserted.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error: " + ex.Message);
                 }
             }
 
@@ -272,7 +293,7 @@ namespace MockPars.Application.Services.Interfaces
             return map.TryGetValue(dataType, out var result) ? result : FakeDataTypesDto.None;
         }
 
-        object GenerateFake(FakeDataTypesDto type)
+        public object GenerateFake(FakeDataTypesDto type)
         {
 
             {
@@ -331,5 +352,35 @@ namespace MockPars.Application.Services.Interfaces
             }
 
         }
+
+
+
+        public async Task<object?> GetRandomForeignKeyValueAsync(SqlConnection connection, string foreignTable)
+        {
+            string primaryKeyQuery = $@"
+        SELECT KCU.COLUMN_NAME AS ColumnName
+        FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS TC
+        JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS KCU
+            ON TC.CONSTRAINT_NAME = KCU.CONSTRAINT_NAME
+        WHERE TC.TABLE_NAME = '{foreignTable}' AND TC.CONSTRAINT_TYPE = 'PRIMARY KEY';";
+
+            using var primaryKeyCmd = new SqlCommand(primaryKeyQuery, connection);
+            using var reader = await primaryKeyCmd.ExecuteReaderAsync();
+
+            if (!reader.Read())
+                return null;
+
+            string primaryKeyColumn = reader["ColumnName"].ToString();
+
+            await reader.CloseAsync();
+
+            string randomRecordQuery = $"SELECT TOP 1 [{primaryKeyColumn}] AS PrimaryColumnName FROM [{foreignTable}] ORDER BY NEWID();";
+
+            using var randomCmd = new SqlCommand(randomRecordQuery, connection);
+            var result = await randomCmd.ExecuteScalarAsync();
+
+            return result;
+        }
+
     }
 }
