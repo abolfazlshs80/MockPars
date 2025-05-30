@@ -6,6 +6,16 @@ public enum FakeDataTypes
     Name,
     City,
     Phone,
+    Digit,
+    DigitLong,
+    DigitDecimal,
+    DigitFloat,
+    String,
+    uniqString,
     Date,
-    Time
+    @bool,
+    Time,
+    Automatic,
+    Pictrue,
+    Computed,
 }
