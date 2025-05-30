@@ -84,23 +84,7 @@ namespace MockPars.WebApi.Controllers
         }
 
 
-        [HttpPost("FakeDataToTable")]
-        [AllowAnonymous]
-        public async Task<IActionResult> FakeDataToTable(FakeDataToTableDto model, CancellationToken ct)
-        {
-            var result = await sqlProvider.AddFakeDataAsync(model);
 
-            if (result.IsError)
-                return BadRequest(string.Join(",", result.Errors.Select(a => a.Description)));
-            return Ok(result.Value);
-        }
-
-        [HttpPost("GetColumnsByTable")]
-        [AllowAnonymous]
-        public async Task<IActionResult> ConnectToDatabase(GetColumnByTableDto model, CancellationToken ct)
-        {
-            var res = await sqlProvider.GetTableColumnAsync(model);
-            return Ok(res.Value);
-        }
+    
     }
 }
