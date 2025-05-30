@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MockPars.Application.DTO.Column;
+using MockPars.Application.DTO.Table;
 using MockPars.Application.DTO.Users;
 using MockPars.Application.Services.Interfaces;
 
@@ -9,7 +10,7 @@ namespace MockPars.WebApi.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class ColumnController(IColumnService ColumnService) : ControllerBase
+    public class ColumnController(IColumnService ColumnService,ISqlProvider sqlProvider) : ControllerBase
     {
         [HttpPost]
         public async Task<IActionResult> Create(CreateColumnDto model, CancellationToken ct)
@@ -79,6 +80,14 @@ namespace MockPars.WebApi.Controllers
                 return BadRequest(string.Join(",", result.Errors.Select(a => a.Description)));
 
             return Ok(result.Value);
+        }
+
+        [HttpPost("GetColumnsByTable")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConnectToDatabase(GetColumnByTableDto model, CancellationToken ct)
+        {
+            var res = await sqlProvider.GetTableColumnAsync(model);
+            return Ok(res.Value);
         }
     }
 }
