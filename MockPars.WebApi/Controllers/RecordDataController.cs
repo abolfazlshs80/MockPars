@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MockPars.Application.DTO.RecordData;
+using MockPars.Application.DTO.Table;
 using MockPars.Application.DTO.Users;
 using MockPars.Application.Services.Interfaces;
 
@@ -9,7 +10,7 @@ namespace MockPars.WebApi.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class RecordDataController(IRecordDataService RecordDataService) : ControllerBase
+    public class RecordDataController(IRecordDataService RecordDataService, ISqlProvider sqlProvider) : ControllerBase
     {
         [HttpPost]
         public async Task<IActionResult> Create(CreateRecordDataDto model, CancellationToken ct)
@@ -69,6 +70,27 @@ namespace MockPars.WebApi.Controllers
             if (result.IsError)
                 return BadRequest(string.Join(",", result.Errors.Select(a => a.Description)));
 
+            return Ok(result.Value);
+        }
+
+        [HttpPost("FakeDataToTable")]
+        [AllowAnonymous]
+        public async Task<IActionResult> FakeDataToTable(FakeDataToTableDto model, CancellationToken ct)
+        {
+            var result = await sqlProvider.AddFakeDataAsync(model);
+
+            if (result.IsError)
+                return BadRequest(string.Join(",", result.Errors.Select(a => a.Description)));
+            return Ok(result.Value);
+        }
+        [HttpPost("FakeDataByCostumColumns")]
+        [AllowAnonymous]
+        public async Task<IActionResult> FakeDataByCostumColumns(FakeDataToCustomColumnsDto model, CancellationToken ct)
+        {
+            var result = await sqlProvider.AddFakeDataAsync(model);
+
+            if (result.IsError)
+                return BadRequest(string.Join(",", result.Errors.Select(a => a.Description)));
             return Ok(result.Value);
         }
     }
