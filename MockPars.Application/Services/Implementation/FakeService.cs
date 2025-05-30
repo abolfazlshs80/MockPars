@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace MockPars.Application.Services.Implementation
 {
-    class FakeService(IUnitOfWork unitOfWork) : IFakeService
+    class FakeService(IUnitOfWork unitOfWork, ISqlProvider sqlProvider) : IFakeService
     {
         public async Task<ErrorOr<int>> GenerateFakeData(int tableId, int count, CancellationToken ct)
         {
@@ -32,7 +32,7 @@ namespace MockPars.Application.Services.Implementation
                     await unitOfWork.RecordDataRepository.AddAsync(new RecordData()
                     {
                         ColumnsId = item.Id,
-                        Value = GenerateFake(Enum.Parse<FakeDataTypesDto>(item.FakeDataTypes.ToString())),
+                        Value = sqlProvider.GenerateFake(Enum.Parse<FakeDataTypesDto>(item.FakeDataTypes.ToString())).ToString(),
                         RowIndex = rowIndex
                     }
                         , ct);
@@ -48,34 +48,6 @@ namespace MockPars.Application.Services.Implementation
 
         }
 
-        string GenerateFake(FakeDataTypesDto type)
-        {
-            switch (type)
-            {
-                case FakeDataTypesDto.Name:
-                    return FakeValue.Names[Random.Shared.Next(0, FakeValue.Names.Count - 1)];
-                    // Generate fake name logic
-                    break;
-                case FakeDataTypesDto.City:
-                    // Generate fake city logic
-                    return FakeValue.Cities[Random.Shared.Next(0, FakeValue.Cities.Count - 1)];
-                    break;
-                case FakeDataTypesDto.Phone:
-                    // Generate fake phone logic
-                    return FakeValue.PhoneNumbers[Random.Shared.Next(0, FakeValue.PhoneNumbers.Count - 1)];
-                    break;
-                case FakeDataTypesDto.Date:
-                    return DateTime.Now.AddDays(Random.Shared.Next(-365, 0)).ToShamsi(); // Generate a random date within the last year
-                    // Generate fake date logic
-                    break;
-                case FakeDataTypesDto.Time:
-                    // Generate fake time logic
-                    // Generate a random time within the day
-                    return DateTime.Now.AddHours(Random.Shared.Next(0, 23)).ToString("HH:mm:ss"); // Generate a random time within the day
-                    break;
-                default:
-                    throw new ArgumentException("Invalid fake data type", nameof(type));
-            }
-        }
+
     }
 }
