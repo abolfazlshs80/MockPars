@@ -24,6 +24,16 @@ namespace MockPars.WebApi.Controllers
 
             return Ok(result.Value);
 
+
+
+        }
+        [AllowAnonymous]
+        [HttpGet("GetFakeTypes")]
+
+        public async Task<IActionResult> GetFakeTypes(CancellationToken ct)
+        {
+
+            return Ok(await fakeService.GetFakeTypes(ct));
         }
     }
 }
