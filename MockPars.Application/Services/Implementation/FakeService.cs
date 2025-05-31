@@ -47,7 +47,22 @@ namespace MockPars.Application.Services.Implementation
             return 1;
 
         }
+        
+        public async Task<ErrorOr<Dictionary<string, int>>> GetFakeTypes(CancellationToken ct)
+        {
+            var model = new Dictionary<string, int>();
 
+            var getType = typeof(FakeDataTypesDto);
+            var fields = getType.GetFields(BindingFlags.Public|BindingFlags.Static);
+            int i = 0;
+            foreach (var item in fields)
+            {
+                model[item.Name] = i;
+                i++;
+            }
+            return model;
+        }
 
+        
     }
 }
