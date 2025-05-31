@@ -11,6 +11,7 @@ namespace MockPars.Application.Services.Interfaces
     public interface IFakeService
     {
         Task<ErrorOr<int>> GenerateFakeData(int tableId,int count, CancellationToken ct);
+        Task<ErrorOr<Dictionary<string,int>>> GetFakeTypes( CancellationToken ct);
         //Task
     }
 }
