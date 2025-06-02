@@ -1,6 +1,7 @@
 ﻿using ErrorOr;
 using MockPars.Application.DTO.@base;
 using MockPars.Application.DTO.Column;
+using MockPars.Application.DTO.RecordData;
 using MockPars.Application.Services.Interfaces;
 using MockPars.Application.Static.Message;
 using MockPars.Domain.Enums;
@@ -9,7 +10,7 @@ using MockPars.Domain.Models;
 
 namespace MockPars.Application.Services.Implementation;
 
-public class ColumnService(IUnitOfWork unitOfWork) : IColumnService
+public class ColumnService(IUnitOfWork unitOfWork, IRecordDataService recordDataService) : IColumnService
 {
     public async Task<List<Dictionary<string, string>>> GetAllRowDataAsync(int tableId, CancellationToken ct)
     {
@@ -101,5 +102,24 @@ public class ColumnService(IUnitOfWork unitOfWork) : IColumnService
             return ErrorOr.Error.NotFound(description: ColumnMessage.NotFound);
 
         return findColumn.Select(_ => new ColumnItemDto(_.Id, _.ColumnName, _.ColumnType, (FakeDataTypesDto)(_.FakeDataTypes), _.TablesId, null)).ToList();
+    }
+
+    public async Task<ErrorOr<bool>> InsertDataByTableId(int tableId, List<ColumnValues> columns, CancellationToken ct)
+    {
+        var findTable = await unitOfWork.TablesRepository.GetByIdAsync(tableId, ct);
+        if (findTable is null)
+            return ErrorOr.Error.NotFound(description: TableMessage.NotFound);
+
+        foreach (var item in columns)
+        {
+            var findColumn = await unitOfWork.ColumnsRepository.GetByColumnNameAsync(item.Name, ct);
+            if (findColumn is null)
+                return ErrorOr.Error.NotFound(description: ColumnMessage.NotFound);
+
+            await recordDataService.CreateRecordData(
+                  new CreateRecordDataDto() { ColumnsId = findColumn.Id, Value = item.Value }, ct);
+
+        }
+        return true;
     }
 }
