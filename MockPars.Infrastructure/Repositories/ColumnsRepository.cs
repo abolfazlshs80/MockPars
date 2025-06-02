@@ -23,7 +23,10 @@ public class ColumnsRepository : Repository<Columns>, IColumnsRepository
     {
         return await _context.Columns.Where(_ => _.TablesId.Equals(tableId)).ToListAsync(ct);
     }
-
+    public async Task<Columns> GetByColumnNameAsync(string name, CancellationToken ct)
+    {
+        return await _context.Columns.Where(_ => _.ColumnName.Equals(name)).FirstOrDefaultAsync(ct);
+    }
     public async Task<List<Columns>> GetAllRowDataAsync(int tableId, CancellationToken ct)
     {
        return  await _context.Columns
