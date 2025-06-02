@@ -9,7 +9,7 @@ namespace MockPars.Application.DTO.RecordData
     public class CreateRecordDataDto
     {
 
-        public int RowIndex { get; set; }
+        //public int RowIndex { get; set; }
         public string Value { get; set; }
         public int ColumnsId { get; set; }
 
