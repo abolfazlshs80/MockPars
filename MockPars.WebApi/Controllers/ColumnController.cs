@@ -7,7 +7,7 @@ using MockPars.Application.Services.Interfaces;
 
 namespace MockPars.WebApi.Controllers
 {
-    [Authorize]
+   // [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ColumnController(IColumnService ColumnService,ISqlProvider sqlProvider) : ControllerBase
@@ -76,6 +76,18 @@ namespace MockPars.WebApi.Controllers
 
 
             var result = await ColumnService.GetColumnsByTableId(tableId, ct);
+            if (result.IsError)
+                return BadRequest(string.Join(",", result.Errors.Select(a => a.Description)));
+
+            return Ok(result.Value);
+        }
+
+        [HttpPost("InsertValue/{tableId}")]
+        public async Task<IActionResult> InsertValue(int tableId,List<ColumnValues> columns, CancellationToken ct)
+        {
+
+
+            var result = await ColumnService.InsertDataByTableId(tableId,columns, ct);
             if (result.IsError)
                 return BadRequest(string.Join(",", result.Errors.Select(a => a.Description)));
 
