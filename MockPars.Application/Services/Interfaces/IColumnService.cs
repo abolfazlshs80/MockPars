@@ -11,4 +11,5 @@ public interface IColumnService
     Task<ErrorOr<bool>> DeleteColumn(int id, CancellationToken ct);
     Task<ErrorOr<ColumnItemDto>> GetColumnById(int id, int tableId, CancellationToken ct);
     Task<ErrorOr<IEnumerable<ColumnItemDto>>> GetColumnsByTableId(int tableId, CancellationToken ct);
+    Task<ErrorOr<bool>> InsertDataByTableId(int tableId, List<ColumnValues> columns ,CancellationToken ct);
 }
