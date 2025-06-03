@@ -177,6 +177,7 @@ namespace MockPars.Application.Services.Interfaces
                     catch (Exception ex)
                     {
                         Console.WriteLine("Error: " + ex.Message);
+                        return Error.Conflict("column error");
                     }
                 }
             }
@@ -248,6 +249,7 @@ namespace MockPars.Application.Services.Interfaces
                 catch (Exception ex)
                 {
                     Console.WriteLine("Error: " + ex.Message);
+                    return Error.Conflict("column error");
                 }
             }
 
