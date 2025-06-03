@@ -23,7 +23,7 @@ namespace MockPars.Application.Services.Interfaces
 
         Task<object?> GetRandomForeignKeyValueAsync(SqlConnection connection, string foreignTable);
         Task<ErrorOr<List<ColumnInfoDto>>> GetTableColumnAsync(GetColumnByTableDto model);
-        Task<ErrorOr<bool>> AddFakeDataAsync(FakeDataToTableDto model);
+        Task<ErrorOr<Dictionary<string, FakeDataTypesDto>>> AddFakeDataAsync(FakeDataToTableDto model);
         Task<ErrorOr<bool>> AddFakeDataAsync(FakeDataToCustomColumnsDto model);
         object GenerateFake(FakeDataTypesDto type);
 
@@ -119,8 +119,9 @@ namespace MockPars.Application.Services.Interfaces
 
         }
 
-        public async Task<ErrorOr<bool>> AddFakeDataAsync(FakeDataToTableDto model)
+        public async Task<ErrorOr<Dictionary<string, FakeDataTypesDto>>> AddFakeDataAsync(FakeDataToTableDto model)
         {
+            Dictionary<string, FakeDataTypesDto> GetColumnFakeValue = new();
             string connectionString = model.Database.ConnectionString;
             //var currentTable = model.Tables.FirstOrDefault();
             foreach (var currentTable in model.Tables)
@@ -135,7 +136,7 @@ namespace MockPars.Application.Services.Interfaces
                     return columnsResult.FirstError;
 
                 var columns = columnsResult.Value.Where(c => !c.IsComputed).ToList();
-                var columnNames = string.Join(',', columns.Select(c => c.Name));
+                var columnNames = string.Join(',', columns.Select(c =>$"[{c.Name}]" ));
                 var parameterNames = string.Join(',', columns.Select(c => "@" + c.Name));
 
                 for (int i = 0; i < model.Count; i++)
@@ -147,7 +148,7 @@ namespace MockPars.Application.Services.Interfaces
 
                     using var command = new SqlCommand(insertQuery, connection);
 
-                    foreach (var column in columnsResult.Value)
+                    foreach (var column in columnsResult.Value.Where(_ => !_.IsComputed))
                     {
 
 
@@ -162,6 +163,7 @@ namespace MockPars.Application.Services.Interfaces
                         else
                         {
                             value = GenerateFake(ConvertSqlToClr(column.TypeColumn));
+                            GetColumnFakeValue[column.Name] = ConvertSqlToClr(column.TypeColumn);
                         }
 
                         command.Parameters.AddWithValue("@" + column.Name, value ?? DBNull.Value);
@@ -180,7 +182,7 @@ namespace MockPars.Application.Services.Interfaces
             }
 
 
-            return true;
+            return GetColumnFakeValue;
         }
 
 
@@ -326,8 +328,9 @@ namespace MockPars.Application.Services.Interfaces
                     FakeDataTypesDto.@bool =>
                         (Random.Shared.Next(0, 2) == 1).ToString(), // "True" or "False"
 
+                          //.ToShamsi()
                     FakeDataTypesDto.Date =>
-                        DateTime.Now.AddDays(Random.Shared.Next(-365, 0)).ToShamsi(),
+                        DateTime.Now.AddDays(Random.Shared.Next(-365, 0)),
 
                     FakeDataTypesDto.Time =>
                         DateTime.Today.AddSeconds(Random.Shared.Next(0, 86400)).ToString("HH:mm:ss"),
